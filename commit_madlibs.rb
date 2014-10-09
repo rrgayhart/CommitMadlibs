@@ -1,16 +1,32 @@
+#!/usr/bin/env ruby
+
 require_relative 'user_commits'
 
 class CommitMadlibs
-  attr_reader :plain_messages
 
   def initialize(username)
-    user_events = UserCommits.new(username)
-    @plain_messages = user_events.messages
+    @username = username
   end
 
-  def convert_messsages
+  def print_messages
+    messages = fetch_and_convert_commits
+    puts "#{username.capitalize}'s Commit Messages"
+    puts '-' * 50
+    puts messages
+  end
+
+  private
+
+  attr_reader :username
+
+  def fetch_and_convert_commits
+    plain_messages = UserCommits.new(username).fetch_commits
+    convert_messages(plain_messages)
+  end
+
+  def convert_messages(plain_messages)
     plain_messages.collect do |message|
-      word_array = message.downcase.split(' ')
+      word_array = message.downcase.split
       word_array.collect do |each_word|
         word = each_word
         if convertable_nouns.include?(word)
@@ -80,8 +96,7 @@ class CommitMadlibs
   end
 end
 
-username = 'rrgayhart'
-madlibs = CommitMadlibs.new(username)
-puts username.capitalize + '\'s Commit Messages'
-puts '-' * 50
-puts madlibs.convert_messsages
+username = ' rrgayhart '
+CommitMadlibs.new(username).print_messages
+
+
